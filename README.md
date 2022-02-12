@@ -11,7 +11,7 @@ The exam includes 3 tasks to be done: [Calculator](/tasks/Calculator.md), [Pyram
 
 ### Result ###
 
-* Author name : {PUT YOUR NAME HERE}
+* Author name : Anastasia Smutko
 
 
 ### How to start?  ###
