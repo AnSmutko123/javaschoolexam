@@ -12,6 +12,7 @@ public class Calculator {
      */
     public String evaluate(String statement) {
         // TODO: Implement the logic here
+        System.out.println();
         return "";
     }
 
