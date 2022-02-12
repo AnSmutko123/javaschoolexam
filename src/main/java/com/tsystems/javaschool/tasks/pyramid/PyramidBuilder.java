@@ -39,7 +39,7 @@ public class PyramidBuilder {
         return array;
     }
 
-    public int testPyramidForTriangle(List<Integer> inputNumbers) {
+    private int testPyramidForTriangle(List<Integer> inputNumbers) {
         int num = 0;
         int increment = 0;
         for (int i = 1; i < inputNumbers.size(); i++) {
@@ -53,7 +53,7 @@ public class PyramidBuilder {
         throw new CannotBuildPyramidException();
     }
 
-    public void testPyramidForNull(List<Integer> inputNumbers) {
+    private void testPyramidForNull(List<Integer> inputNumbers) {
         Iterator iter = inputNumbers.iterator();
         while (iter.hasNext()) {
             if (iter.next() == null) {
@@ -61,6 +61,4 @@ public class PyramidBuilder {
             }
         }
     }
-
-
 }

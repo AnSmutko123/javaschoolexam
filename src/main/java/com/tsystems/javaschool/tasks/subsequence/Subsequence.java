@@ -1,9 +1,5 @@
 package com.tsystems.javaschool.tasks.subsequence;
 
-import com.tsystems.javaschool.tasks.pyramid.CannotBuildPyramidException;
-
-import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 public class Subsequence {
@@ -19,13 +15,13 @@ public class Subsequence {
     @SuppressWarnings("rawtypes")
     public boolean find(List x, List y) {
         // TODO: Implement the logic here
-            if (x == null || y == null) {
-                throw new IllegalArgumentException();
-            }
+        if (x == null || y == null) {
+            throw new IllegalArgumentException();
+        }
         int newJ = 0;
         for (int i = 0; i < x.size(); i++) {
             for (int j = newJ; j < y.size(); j++) {
-                if(x.get(i) == y.get(j)) {
+                if (x.get(i) == y.get(j)) {
                     x.remove(i);
                     i--;
                     newJ = j;
@@ -33,7 +29,6 @@ public class Subsequence {
                 }
             }
         }
-
         if (x.isEmpty()) {
             return true;
         }

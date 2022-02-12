@@ -10,7 +10,7 @@ public class Calculator {
 
     public static void main(String[] args) {
         Calculator calculator = new Calculator();
-        System.out.println(calculator.evaluate("(1+38)*4-5.2"));
+        System.out.println(calculator.evaluate("(1+38)*4-5"));
     }
 
     /**
@@ -45,7 +45,7 @@ public class Calculator {
     }
 
     private static class Calc {
-        private Stack<Double> nums = new Stack<Double>();
+        private Stack<Integer> nums = new Stack<Integer>();
         private Stack<Character> ops = new Stack<Character>();
 
         // операции
@@ -69,7 +69,7 @@ public class Calculator {
         }
 
         // числа
-        public void num(double v) {
+        public void num(int v) {
             nums.push(v);
         }
 
@@ -92,20 +92,20 @@ public class Calculator {
         // сердце калькулятора
         private void apply(char c) {
             if (c == '+') {
-                double b = nums.pop();
-                double a = nums.pop();
+                int b = nums.pop();
+                int a = nums.pop();
                 nums.push(a + b);
             } else if (c == '-') {
-                double b = nums.pop();
-                double a = nums.pop();
+                int b = nums.pop();
+                int a = nums.pop();
                 nums.push(a - b);
             } else if (c == '*') {
-                double b = nums.pop();
-                double a = nums.pop();
+                int b = nums.pop();
+                int a = nums.pop();
                 nums.push(a * b);
             } else if (c == '/') {
-                double b = nums.pop();
-                double a = nums.pop();
+                int b = nums.pop();
+                int a = nums.pop();
                 nums.push(a / b);
             }
         }
