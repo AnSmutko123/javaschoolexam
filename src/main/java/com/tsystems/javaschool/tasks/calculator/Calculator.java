@@ -11,11 +11,6 @@ import java.util.regex.Pattern;
 
 public class Calculator {
 
-    public static void main(String[] args) {
-        Calculator calculator = new Calculator();
-        System.out.println(calculator.evaluate("(1+38)*4-5"));
-    }
-
     /**
      * Evaluate statement represented as string.
      *
@@ -26,57 +21,68 @@ public class Calculator {
      */
     public String evaluate(String statement) {
         // TODO: Implement the logic here
-        if (statement == null || statement.isEmpty()){
+        if (statement == null || statement.isEmpty()) {
             return null;
         }
         Calc c = new Calc();
         List<String> tokenizeList = tokenize(statement);
-        if(!testForEvaluate(tokenizeList)) {
+        if (!testForEvaluate(tokenizeList)) {
             return null;
         }
         StringBuilder sb = new StringBuilder();
+        boolean lastToken = false;
         for (int i = 0; i < tokenizeList.size(); i++) {
             if (tokenizeList.get(i).length() == 1 && "+-*/()".contains(tokenizeList.get(i))) {
-                c.op(tokenizeList.get(i).charAt(0));
+                if (i == tokenizeList.size()-1) {
+                    lastToken = true;
+                }
+                if (!c.op(tokenizeList.get(i).charAt(0), lastToken)) {
+                    return null;
+                }
             } else if (tokenizeList.get(i).equals(".")) {
                 sb.append(tokenizeList.get(i));
             } else {
                 sb.append(tokenizeList.get(i));
-                if (i != tokenizeList.size() - 1 && !tokenizeList.get(i+1).equals(".")) {
+                if (i != tokenizeList.size() - 1 && !tokenizeList.get(i + 1).equals(".")) {
+                    if (sb.toString().startsWith(".")) {
+                        return null;
+                    }
                     c.num(Double.parseDouble(sb.toString()));
                     sb.setLength(0);
                 }
                 if (i == tokenizeList.size() - 1) {
                     c.num(Double.parseDouble(sb.toString()));
+                    if (sb.toString().startsWith(".")) {
+                        return null;
+                    }
                 }
             }
         }
-        double result = c.eval();
-
-        DecimalFormatSymbols otherSymbols = new DecimalFormatSymbols(Locale.getDefault());
-        otherSymbols.setDecimalSeparator('.');
-        DecimalFormat decimalFormat = new DecimalFormat("#.####", otherSymbols);
-        String secondResult = decimalFormat.format(result);
-        return secondResult;
+        return c.eval();
     }
 
-    public boolean testForEvaluate(List<String> list){
+    public boolean testForEvaluate(List<String> list) {
+        if (list == null) {
+            return false;
+        }
         for (int i = 0; i < list.size(); i++) {
-            if (i != list.size() - 1 && list.get(i).equals(list.get(i + 1))){
+            if (i != list.size() - 1 && list.get(i).equals(list.get(i + 1))) {
                 return false;
             }
         }
         return true;
     }
 
-    // выделяет числа и символы
     public static List<String> tokenize(String expr) {
         List<String> list = new ArrayList<String>();
+        Pattern pattern = Pattern.compile("[-+\\*/()\\.\\d]+");
+        if (!pattern.matcher(expr).matches()) {
+            return null;
+        }
         Matcher m = Pattern.compile("[-+\\*/()\\.]|[\\d]+").matcher(expr);
         while (m.find()) {
             list.add(m.group());
         }
-        System.out.println(list);
         return list;
     }
 
@@ -84,11 +90,13 @@ public class Calculator {
         private Stack<Double> nums = new Stack<Double>();
         private Stack<Character> ops = new Stack<Character>();
 
-        // операции
-        public void op(char c) {
+        public boolean op(char c, boolean lastChar) {
+            int count = 0;
             if (c == '(') {
+                count++;
                 ops.push(c);
             } else if (c == ')') {
+                count--;
                 while (true) {
                     char cc = ops.pop();
                     if (cc == '(') {
@@ -102,36 +110,47 @@ public class Calculator {
                 }
                 ops.push(c);
             }
+            if (lastChar && count != 0) {
+                return false;
+            }
+            return true;
         }
 
-        // числа
         public void num(double v) {
             nums.push(v);
         }
 
-        // получение значения выражения
-        public Double eval() {
-//            try {
-                while (!ops.empty()) {
-                    apply(ops.pop());
+        public String eval() {
+            while (!ops.empty()) {
+                if (!apply(ops.pop())) {
+                    return null;
                 }
-                return nums.pop();
-//            } catch (ArithmeticException ex) {
-//                return null;
-//            }
-
+            }
+            double result = nums.pop();
+            DecimalFormatSymbols otherSymbols = new DecimalFormatSymbols(Locale.getDefault());
+            otherSymbols.setDecimalSeparator('.');
+            DecimalFormat decimalFormat = new DecimalFormat("#.####", otherSymbols);
+            String stringResult = decimalFormat.format(result);
+            return stringResult;
         }
 
         private int priority(char c) {
-            if (c == '+') { return 1; }
-            if (c == '-') { return 1; }
-            if (c == '*') { return 2; }
-            if (c == '/') { return 2; }
+            if (c == '+') {
+                return 1;
+            }
+            if (c == '-') {
+                return 1;
+            }
+            if (c == '*') {
+                return 2;
+            }
+            if (c == '/') {
+                return 2;
+            }
             return 0;
         }
 
-        // сердце калькулятора
-        private void apply(char c) {
+        private boolean apply(char c) {
             if (c == '+') {
                 double b = nums.pop();
                 double a = nums.pop();
@@ -147,8 +166,12 @@ public class Calculator {
             } else if (c == '/') {
                 double b = nums.pop();
                 double a = nums.pop();
+                if (b == 0) {
+                    return false;
+                }
                 nums.push(a / b);
             }
+            return true;
         }
     }
 
